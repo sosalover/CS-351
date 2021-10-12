@@ -28,6 +28,7 @@
 //    --set each dot color individually? (what happens to the line colors?)
 //
 var VSHADER_SOURCE =
+ // 'uniform mat4 u_ModelMatrix;\n' +
   'attribute vec4 a_Position;\n' +
   'void main() {\n' +
   '  gl_Position = a_Position;\n' +
@@ -40,6 +41,7 @@ var FSHADER_SOURCE =
   'void main() {\n' +
   '  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);\n' +
   '}\n';
+  
 
 function main() {
 //==============================================================================
@@ -58,6 +60,8 @@ function main() {
     console.log('Failed to intialize shaders.');
     return;
   }
+  //var g_modelMatrix = new Matrix4();
+  //var g_modelMatLoc; 
 
   // Write buffer full of vertices to the GPU, and make it available to shaders
   var n = initVertexBuffers(gl);	
@@ -65,13 +69,19 @@ function main() {
     console.log('Failed to load vertices into the GPU');
     return;
   }
+  /*g_modelMatLoc = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
+  if (!g_modelMatLoc) { 
+    console.log('Failed to get the storage location of u_ModelMatrix');
+    return;
+  }*/
 
   // Specify the color for clearing <canvas>: (Northwestern purple)
   gl.clearColor(78/255, 42/255, 132/255 , 1.0);	// R,G,B,A (A==opacity)
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
-
+  //g_modelMatrix.rotate(12,140 , -12, 12);
+  //gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   // Draw 6 points. see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glDrawArrays.xml
  gl.drawArrays(gl.LINE_LOOP, 0, n); // gl.drawArrays(mode, first, count)
 			//mode: sets drawing primitive to use. Other valid choices: 
@@ -89,21 +99,18 @@ function main() {
 			// first: index of 1st element of array.
 			// count; number of elements to read from the array.
 }
-
+var scaler = 0.25;
 
 function initVertexBuffers(gl) {
 //==============================================================================
 // first, create an array with all our vertex attribute values:
   var vertices = new Float32Array([
-     0.0,  0.5, 0.0, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
-    -0.2,  0.0, 0.0, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
-    -0.5, -0.5, 0.0, 1.0,   
-     0.0, -0.2, 0.0, 1.0, 	// new point!
-     0.5, -0.5, 0.0, 1.0,	// 
-     0.2,  0.0, 0.0, 1.0, 	// new point!  (note we need a trailing comma here)
-     
+     1.0*scaler,  1.0*scaler, 1.0*scaler, 1.0,	// CAREFUL! I made these into 4D points/ vertices: x,y,z,w.
+     1.0*scaler,  2.0*scaler, 1.0*scaler, 1.0,	// new point!  (? What happens if I make w=0 instead of 1.0?)
+     1.0*scaler,  2.0*scaler, 1.0*scaler, 1.0,   
+     1.0*scaler, 1.0*scaler, 2.0*scaler, 1.0, 	// new point!
   ]);
-  var n = 6; // The number of vertices
+  var n = 4; // The number of vertices
 
   // Then in the Graphics hardware, create a vertex buffer object (VBO)
   var vertexBuffer = gl.createBuffer();	// get it's 'handle'
