@@ -310,7 +310,66 @@ function initVertexBuffer() {
   return nn;
 */
 }
+function DrawTetra(){
+	g_modelMatrix.setTranslate(-0.4,-0.4, 0.0);  // 'set' means DISCARD old matrix,
+	// (drawing axes centered in CVV), and then make new
+	// drawing axes moved to the lower-left corner of CVV. 
+	g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
+															// to match WebGL display canvas.
+	g_modelMatrix.scale(0.5, 0.5, 0.5);
+	// if you DON'T scale, tetra goes outside the CVV; clipped!
+	g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
+	g_modelMatrix.rotate(g_angle02, 1, 0, 0);  // Make new drawing axes that
 
+// DRAW TETRA:  Use this matrix to transform & draw 
+//						the first set of vertices stored in our VBO:
+// Pass our current matrix to the vertex shaders:
+gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+// Draw triangles: start at vertex 0 and draw 12 vertices
+gl.drawArrays(gl.TRIANGLES, 0, 12);	
+}
+function DrawWedge(){
+	g_modelMatrix.setTranslate(0.4, 0.4, 0.0);  // 'set' means DISCARD old matrix,
+	// (drawing axes centered in CVV), and then make new
+	// drawing axes moved to the lower-left corner of CVV.
+g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
+															// to match WebGL display canvas.
+g_modelMatrix.scale(0.3, 0.3, 0.3);				// Make it smaller.
+
+// Mouse-Dragging for Rotation:
+//-----------------------------
+// Attempt 1:  X-axis, then Y-axis rotation:
+/*  						// First, rotate around x-axis by the amount of -y-axis dragging:
+g_modelMatrix.rotate(-g_yMdragTot*120.0, 1, 0, 0); // drag +/-1 to spin -/+120 deg.
+	// Then rotate around y-axis by the amount of x-axis dragging
+g_modelMatrix.rotate( g_xMdragTot*120.0, 0, 1, 0); // drag +/-1 to spin +/-120 deg.
+// Acts SENSIBLY if I always drag mouse to turn on Y axis, then X axis.
+// Acts WEIRDLY if I drag mouse to turn on X axis first, then Y axis.
+// ? Why is is 'backwards'? Duality again!
+*/
+//-----------------------------
+
+// Attempt 2: perp-axis rotation:
+	  // rotate on axis perpendicular to the mouse-drag direction:
+var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
+	  // why add 0.001? avoids divide-by-zero in next statement
+	  // in cases where user didn't drag the mouse.)
+g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
+// Acts weirdly as rotation amounts get far from 0 degrees.
+// ?why does intuition fail so quickly here?
+
+//-------------------------------
+// Attempt 3: Quaternions? What will work better?
+
+// YOUR CODE HERE
+
+//-------------------------------
+// DRAW 2 TRIANGLES:		Use this matrix to transform & draw
+//						the different set of vertices stored in our VBO:
+gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+// Draw only the last 2 triangles: start at vertex 6, draw 6 vertices
+gl.drawArrays(gl.TRIANGLES, 6,6);
+}
 function drawAll() {
 //==============================================================================
   // Clear <canvas>  colors AND the depth buffer
@@ -329,64 +388,10 @@ function drawAll() {
 	// console.log("clear value:", clrColr);
 	
   //-------Draw Spinning Tetrahedron
-  g_modelMatrix.setTranslate(-0.4,-0.4, 0.0);  // 'set' means DISCARD old matrix,
-  						// (drawing axes centered in CVV), and then make new
-  						// drawing axes moved to the lower-left corner of CVV. 
-  g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
-  																				// to match WebGL display canvas.
-  g_modelMatrix.scale(0.5, 0.5, 0.5);
-  						// if you DON'T scale, tetra goes outside the CVV; clipped!
-  g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
-  g_modelMatrix.rotate(g_angle02, 1, 0, 0);  // Make new drawing axes that
-
-  // DRAW TETRA:  Use this matrix to transform & draw 
-  //						the first set of vertices stored in our VBO:
-  		// Pass our current matrix to the vertex shaders:
-  gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-  		// Draw triangles: start at vertex 0 and draw 12 vertices
-  gl.drawArrays(gl.TRIANGLES, 0, 12);
-
+	DrawTetra();	
+	DrawWedge();
   // NEXT, create different drawing axes, and...
-  g_modelMatrix.setTranslate(0.4, 0.4, 0.0);  // 'set' means DISCARD old matrix,
-  						// (drawing axes centered in CVV), and then make new
-  						// drawing axes moved to the lower-left corner of CVV.
-  g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
-  																				// to match WebGL display canvas.
-  g_modelMatrix.scale(0.3, 0.3, 0.3);				// Make it smaller.
-  
-  // Mouse-Dragging for Rotation:
-	//-----------------------------
-	// Attempt 1:  X-axis, then Y-axis rotation:
-/*  						// First, rotate around x-axis by the amount of -y-axis dragging:
-  g_modelMatrix.rotate(-g_yMdragTot*120.0, 1, 0, 0); // drag +/-1 to spin -/+120 deg.
-  						// Then rotate around y-axis by the amount of x-axis dragging
-	g_modelMatrix.rotate( g_xMdragTot*120.0, 0, 1, 0); // drag +/-1 to spin +/-120 deg.
-				// Acts SENSIBLY if I always drag mouse to turn on Y axis, then X axis.
-				// Acts WEIRDLY if I drag mouse to turn on X axis first, then Y axis.
-				// ? Why is is 'backwards'? Duality again!
-*/
-	//-----------------------------
-
-	// Attempt 2: perp-axis rotation:
-							// rotate on axis perpendicular to the mouse-drag direction:
-	var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
-							// why add 0.001? avoids divide-by-zero in next statement
-							// in cases where user didn't drag the mouse.)
-	g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
-				// Acts weirdly as rotation amounts get far from 0 degrees.
-				// ?why does intuition fail so quickly here?
-
-	//-------------------------------
-	// Attempt 3: Quaternions? What will work better?
-
-					// YOUR CODE HERE
-
-	//-------------------------------
-	// DRAW 2 TRIANGLES:		Use this matrix to transform & draw
-	//						the different set of vertices stored in our VBO:
-  gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-  		// Draw only the last 2 triangles: start at vertex 6, draw 6 vertices
-  gl.drawArrays(gl.TRIANGLES, 6,6);
+ 
 
 }
 
