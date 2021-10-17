@@ -247,7 +247,7 @@ function initVertexBuffer() {
      0.0, 0.5, 0.0, 1.0,			0.0, 1.0, 1.0,		// cyan
 /*SPACESHIP BASE VERTICES*/
 
-	-0.5/Math.sqrt(3), 0, 0.5, 1,			1.0, 0.0, 0.0, //1
+	-0.5/Math.sqrt(3), 0, 0.5, 1,			1.0, 0.0, 0.0, //1  #33
 	-0.5, 0, 0, 1,							1.0, 0.0, 0.0, //2
 	0, 0, 0, 1,								1.0, 0.0, 0.0, //0
 
@@ -321,7 +321,56 @@ function initVertexBuffer() {
 
 	-0.5/Math.sqrt(3), 0, 0.5, 1,			1.0, 0.0, 0.0, //1
 	-0.5/Math.sqrt(3), -0.2, 0.5, 1,			1.0, 1.0, 0.0, //1d
-	.5/Math.sqrt(3), -0.2, 0.5, 1,			1.0, 1.0, 0.0, //6d
+	.5/Math.sqrt(3), -0.2, 0.5, 1,			1.0, 1.0, 0.0, //6d			#71
+//SPACESHIP TOP VERTICES
+	0, 0, -0.5, 1, 							0.3, 0.3, 0.3,
+	0, 0.5, -0.5, 1, 						0.3, 0.3, 0.3,
+	0.5, 0, -0.5, 1,						0.3, 0.3, 0.3,
+	0.5, 0.5, -0.5, 1, 						0.3, 0.3, 0.3,
+
+	0, 0, 0.5, 1, 							0.3, 0.3, 0.3,
+	0, 0.5, 0.5, 1, 						0.3, 0.3, 0.3,
+	0.5, 0, 0.5, 1,							0.3, 0.3, 0.3,
+	0.5, 0.5, 0.5, 1, 						0.3, 0.3, 0.3,
+
+	0, 0, 0.5, 1,							0.3, 0.3, 0.3,
+	0, 0.5, 0.5, 1, 						0.3, 0.3, 0.3,
+	0, 0, -0.5, 1, 							0.3, 0.3, 0.3,
+	0, 0.5, -0.5, 1, 						0.3, 0.3, 0.3,
+
+	0, 0, 0.5, 1, 							0.3, 0.3, 0.3,
+	0, 0, -0.5, 1, 							0.3, 0.3, 0.3,
+	0.5, 0, 0.5, 1,							0.3, 0.3, 0.3,
+	0.5, 0, -0.5, 1,						0.3, 0.3, 0.3,
+
+	0.5, 0, 0.5, 1,							0.5, 0.5, 0.5,
+	0.5, 0.5, 0.5, 1, 						0.5, 0.5, 0.5,
+	0.5, 0, -0.5, 1,						0.5, 0.5, 0.5,
+	0.5, 0.5, -0.5, 1, 						0.5, 0.5, 0.5,
+
+	0, 0, 0.5, 1, 							0.5, 0.5, 0.5,
+	0, 0.5, -0.5, 1, 						0.5, 0.5, 0.5,
+	0.5, 0.5, 0.5, 1, 						0.5, 0.5, 0.5,
+	0.5, 0.5, -0.5, 1, 						0.5, 0.5, 0.5,
+
+	//ABDUCTION BEAM VERTICES
+	-0.5/Math.sqrt(3), 0, 0.5, 1,			0.0, 1.0, 0.0, //1 //96
+	-0.5/Math.sqrt(3)+0.2/Math.sqrt(2), 0, 0.5-0.2/Math.sqrt(2), 1,			0.0, 1.0, 0.0, //1a
+	-0.5, 0, 0, 1,							0.0, 1.0, 0.0, //2
+	-0.3, 0, 0, 1,							0.0, 1.0, 0.0, //2a
+	-0.5/Math.sqrt(3), 0,-0.5, 1,			0.0, 1.0, 0.0, //3
+	-0.5/Math.sqrt(3)+0.2/Math.sqrt(2), 0,-0.5+0.2/Math.sqrt(2), 1,			0.0, 1.0, 0.0, //3a
+	0.5/Math.sqrt(3), 0, -0.5, 1,			0.0, 1.0, 0.0, //4
+	0.5/Math.sqrt(3)-0.2/Math.sqrt(2), 0, -0.5+0.2/Math.sqrt(2), 1,			0.0, 1.0, 0.0, //4a
+	0.5, 0, 0, 1,							0.0, 1.0, 0.0, //5
+	0.3, 0, 0, 1,							0.0, 1.0, 0.0, //5a
+	0.5/Math.sqrt(3), 0, 0.5, 1,			0.0, 1.0, 0.0, //6
+	0.5/Math.sqrt(3)-0.2/Math.sqrt(2), 0, 0.5-0.2/Math.sqrt(2), 1,			0.0, 1.0, 0.0, //6a
+	-0.5/Math.sqrt(3), 0, 0.5, 1,			0.0, 1.0, 0.0, //1
+	-0.5/Math.sqrt(3)+0.2/Math.sqrt(2), 0, 0.5-0.2/Math.sqrt(2), 1,			0.0, 1.0, 0.0, //1a //109
+
+
+
 
   ]);
   g_vertsMax = 66;		// 12 tetrahedron vertices.
@@ -392,15 +441,28 @@ function initVertexBuffer() {
 }
 function drawSpaceShipBase(){
 	pushMatrix(g_modelMatrix);
-	g_modelMatrix.setTranslate(-.1,-.3,0);
-  	g_modelMatrix.rotate(12,140 , -12, 12);
+	g_modelMatrix.translate(g_xMdragTot,g_yMdragTot,0);
+	g_modelMatrix.rotate(15, -1, 0, 0);
+	g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
 	pushMatrix(g_modelMatrix);
   	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   	gl.drawArrays(gl.TRIANGLES, 15, 18)
 	gl.drawArrays(gl.TRIANGLES, 33, 36);
-	popMatrix(g_modelMatrix);
+	g_modelMatrix = popMatrix();
 }
+function drawSpaceShipTop(){
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.translate(-0.10, 0, 0);
+	g_modelMatrix.scale(0.5, 0.5, 0.25);
+	g_modelMatrix.rotate(15, 0, 1, 0);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 72, 24);
+	g_modelMatrix = popMatrix();
+	
+}
+
 function initializeCanvas(){
+	gl.clearColor(0.5294, 0.8078, 0.9216, 1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   
 // Great question from student:
@@ -411,7 +473,7 @@ function initializeCanvas(){
 //	search for 'glGet()' (ctrl-f) yields:
 //  OpenGL's 'glGet()' becomes WebGL's 'getParameter()'
 
-	clrColr = new Float32Array(4);
+	clrColr = new Float32Array();
 	clrColr = gl.getParameter(gl.COLOR_CLEAR_VALUE);
 }
 function drawSampleTriangle(){
@@ -419,6 +481,16 @@ function drawSampleTriangle(){
 	// Draw triangles: start at vertex 12 and draw 3 vertices
 // gl.drawArrays(gl.TRIANGLES, 12, 3);
 	gl.drawArrays(gl.TRIANGLES,12,3 );
+}
+function drawAbudctionBeam(scale, y){
+	
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.translate(0, y, 0);
+	g_modelMatrix.scale(scale, scale, scale)
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 96, 12);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 106, 4);
+	g_modelMatrix = popMatrix();
 }
 function drawSpinningTetrahedron(){
 	g_modelMatrix.setTranslate(-0.8,-0.8, 0.0);  // 'set' means DISCARD old matrix,
@@ -475,6 +547,13 @@ function drawAll() {
 	g_modelMatrix.setTranslate(0,0,0);
   	//drawSampleTriangle();
  	drawSpaceShipBase();
+	drawSpaceShipTop();
+	if ((g_angle01 > 0 )&& (g_angle01 < 30) || (g_angle01 >90 && g_angle01 < 120 ) || (g_angle01 >-180 && g_angle01 < -150 ) || (g_angle01 >-90 && g_angle01 < -60 )) {
+	drawAbudctionBeam(1, -.3);}
+	if ((g_angle01 > 30 && g_angle01 < 60) || (g_angle01 >120 && g_angle01 < 150 ) || (g_angle01 >-150 && g_angle01 < -120 ) || (g_angle01 >-60 && g_angle01 < -30 )){
+	drawAbudctionBeam(0.75, -.6);}
+	if ((g_angle01 > 60 && g_angle01 < 90) || (g_angle01 >150 && g_angle01 < 180 ) || (g_angle01 >-120 && g_angle01 < -90) || (g_angle01 >-30 && g_angle01 < 0 )){
+	drawAbudctionBeam(0.5, -0.9);}
 	//drawSpinningTetrahedron();
 	//drawInteractiveWedge();
 }
