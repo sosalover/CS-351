@@ -390,11 +390,18 @@ function initVertexBuffer() {
   return nn;
 */
 }
-
-function drawAll() {
-//==============================================================================
-  // Clear <canvas>  colors AND the depth buffer
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+function drawSpaceShipBase(){
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.setTranslate(-.1,-.3,0);
+  	g_modelMatrix.rotate(12,140 , -12, 12);
+	pushMatrix(g_modelMatrix);
+  	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+  	gl.drawArrays(gl.TRIANGLES, 15, 18)
+	gl.drawArrays(gl.TRIANGLES, 33, 36);
+	popMatrix(g_modelMatrix);
+}
+function initializeCanvas(){
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   
 // Great question from student:
 // "?How can I get the screen-clearing color (or any of the many other state
@@ -406,66 +413,43 @@ function drawAll() {
 
 	clrColr = new Float32Array(4);
 	clrColr = gl.getParameter(gl.COLOR_CLEAR_VALUE);
-	// console.log("clear value:", clrColr);
+}
+function drawSampleTriangle(){
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	// Draw triangles: start at vertex 12 and draw 3 vertices
+// gl.drawArrays(gl.TRIANGLES, 12, 3);
+	gl.drawArrays(gl.TRIANGLES,12,3 );
+}
+function drawSpinningTetrahedron(){
+	g_modelMatrix.setTranslate(-0.8,-0.8, 0.0);  // 'set' means DISCARD old matrix,
+	// (drawing axes centered in CVV), and then make new
+	// drawing axes moved to the lower-left corner of CVV. 
 
-	//--------Draw NON spinning triangle
-	g_modelMatrix.setTranslate(0,0,0);
-		//Use this matrix to transform & draw 
-  //						the first set of vertices stored in our VBO:
-  		// Pass our current matrix to the vertex shaders:
-  gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-  		// Draw triangles: start at vertex 12 and draw 3 vertices
- // gl.drawArrays(gl.TRIANGLES, 12, 3);
-  gl.drawArrays(gl.TRIANGLES,12,3 );
-  g_modelMatrix.setTranslate(-.1,-.3,0);
-  g_modelMatrix.rotate(12,140 , -12, 12);
-  gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-  gl.drawArrays(gl.TRIANGLES, 15, 18)
-  gl.drawArrays(gl.TRIANGLES, 33, 36);
-	//-----------------------------------------
-	
-  //-------Draw Spinning Tetrahedron
-  g_modelMatrix.setTranslate(-0.8,-0.8, 0.0);  // 'set' means DISCARD old matrix,
-  						// (drawing axes centered in CVV), and then make new
-  						// drawing axes moved to the lower-left corner of CVV. 
-		
-  g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
-  																				// to match WebGL display canvas.
-  g_modelMatrix.scale(0.5, 0.5, 0.5);
-  						// if you DON'T scale, tetra goes outside the CVV; clipped!
-  g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
+g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
+															// to match WebGL display canvas.
+g_modelMatrix.scale(0.5, 0.5, 0.5);
+	// if you DON'T scale, tetra goes outside the CVV; clipped!
+g_modelMatrix.rotate(g_angle01, 0, 1, 0);  // Make new drawing axes that
 
-  // DRAW TETRA:  Use this matrix to transform & draw 
-  //						the first set of vertices stored in our VBO:
-  		// Pass our current matrix to the vertex shaders:
-  gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
-  		// Draw triangles: start at vertex 0 and draw 12 vertices
-  gl.drawArrays(gl.TRIANGLES, 0, 12);
+// DRAW TETRA:  Use this matrix to transform & draw 
+//						the first set of vertices stored in our VBO:
+// Pass our current matrix to the vertex shaders:
+gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+// Draw triangles: start at vertex 0 and draw 12 vertices
+gl.drawArrays(gl.TRIANGLES, 0, 12);
 
-  // NEXT, create different drawing axes, and...
-  g_modelMatrix.setTranslate(0.4, 0.4, 0.0);  // 'set' means DISCARD old matrix,
-  						// (drawing axes centered in CVV), and then make new
-  						// drawing axes moved to the lower-left corner of CVV.
-  g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
-  																				// to match WebGL display canvas.
-  g_modelMatrix.scale(0.3, 0.3, 0.3);				// Make it smaller.
-  
-  // Mouse-Dragging for Rotation:
-	//-----------------------------
-	// Attempt 1:  X-axis, then Y-axis rotation:
-/*  						// First, rotate around x-axis by the amount of -y-axis dragging:
-  g_modelMatrix.rotate(-g_yMdragTot*120.0, 1, 0, 0); // drag +/-1 to spin -/+120 deg.
-  						// Then rotate around y-axis by the amount of x-axis dragging
-	g_modelMatrix.rotate( g_xMdragTot*120.0, 0, 1, 0); // drag +/-1 to spin +/-120 deg.
-				// Acts SENSIBLY if I always drag mouse to turn on Y axis, then X axis.
-				// Acts WEIRDLY if I drag mouse to turn on X axis first, then Y axis.
-				// ? Why is is 'backwards'? Duality again!
-*/
-	//-----------------------------
-
+// NEXT, create different drawing axes, and...
+g_modelMatrix.setTranslate(0.4, 0.4, 0.0);  // 'set' means DISCARD old matrix,
+	// (drawing axes centered in CVV), and then make new
+	// drawing axes moved to the lower-left corner of CVV.
+g_modelMatrix.scale(1,1,-1);							// convert to left-handed coord sys
+															// to match WebGL display canvas.
+g_modelMatrix.scale(0.3, 0.3, 0.3);				// Make it smaller.
+}
+function drawInteractiveWedge(){
 	// Attempt 2: perp-axis rotation:
 							// rotate on axis perpendicular to the mouse-drag direction:
-	var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
+							var dist = Math.sqrt(g_xMdragTot*g_xMdragTot + g_yMdragTot*g_yMdragTot);
 							// why add 0.001? avoids divide-by-zero in next statement
 							// in cases where user didn't drag the mouse.)
 	g_modelMatrix.rotate(dist*120.0, -g_yMdragTot+0.0001, g_xMdragTot+0.0001, 0.0);
@@ -483,7 +467,16 @@ function drawAll() {
   gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
   		// Draw only the last 2 triangles: start at vertex 6, draw 6 vertices
   gl.drawArrays(gl.TRIANGLES, 6,6);
-
+}
+function drawAll() {
+//==============================================================================
+  
+	initializeCanvas();
+	g_modelMatrix.setTranslate(0,0,0);
+  	//drawSampleTriangle();
+ 	drawSpaceShipBase();
+	//drawSpinningTetrahedron();
+	//drawInteractiveWedge();
 }
 
 // Last time that this function was called:  (used for animation timing)
