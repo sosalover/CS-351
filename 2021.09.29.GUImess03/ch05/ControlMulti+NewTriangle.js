@@ -79,6 +79,10 @@ var g_yMdragTot=0.0;
 var g_digits=5;			// DIAGNOSTICS: # of digits to print in console.log (
 									//    console.log('xVal:', xVal.toFixed(g_digits)); // print 5 digits
 var g_matrixStack = []; // Array for storing matrices
+
+var legJointAngle = 0.0;
+var legJointAngleRate = 160.0;
+var animalMoving = false;
 function pushMatrix(m) { // Store the specified matrix
 	var m2 = new Matrix4(m);
 	g_matrixStack.push(m2);
@@ -191,7 +195,8 @@ function main() {
   //----------------- 
   var tick = function() {
     g_angle01 = animate(g_angle01);  // Update the rotation angle
-    drawAll();   // Draw all parts
+    
+	drawAll();   // Draw all parts
 //    console.log('g_angle01=',g_angle01.toFixed(g_digits)); // put text in console.
 
 //	Show some always-changing text in the webpage :  
@@ -520,7 +525,7 @@ function drawAnimalBody(){
 	g_modelMatrix.translate(-0.4, -.8, 0);
 	g_modelMatrix.rotate(20, 1, 1, 1);
 	g_modelMatrix.scale(1, 0.5, 0.1);
-	//g_modelMatrix.rotate(g_angle01, 0, 1, 0);
+	g_modelMatrix.rotate(g_angle01, 0, 1, 0);
 	pushMatrix(g_modelMatrix);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 110, 24);
@@ -546,7 +551,11 @@ function drawAnimalLeg(){
 	pushMatrix(g_modelMatrix);
 	g_modelMatrix.translate(0, -.3, 0);
 	g_modelMatrix.scale(0.5,1,1);
+	legJointAngle = runLegs(legJointAngle);
 	g_modelMatrix.rotate(90, 0, 0, 1);
+	if (animalMoving){
+	g_modelMatrix.rotate(legJointAngle, 0, 0, 1);}
+	//g_modelMatrix.rotate(legJointAngleRate, 0, 0, 1);
 	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 134, 12);
 	g_modelMatrix = popMatrix();
@@ -690,6 +699,20 @@ function animate(angle) {
   if(newAngle > 180.0) newAngle = newAngle - 360.0;
   if(newAngle <-180.0) newAngle = newAngle + 360.0;
   return newAngle;
+}
+g_last = Date.now();
+function runLegs(angle){
+	var now = Date.now();
+	var elapsed = now - g_last;
+	g_last = now;
+	var newAngle = angle;
+	if (newAngle >= 30){ 
+		legJointAngleRate = -160;
+	}else if (newAngle <=-30){ 
+		legJointAngleRate = 160;
+	}
+	newAngle = angle + (legJointAngleRate*elapsed) /1000.0;
+	return newAngle;
 }
 
 //==================HTML Button Callbacks======================
@@ -957,6 +980,6 @@ function myKeyDown(kev) {
 function myKeyUp(kev) {
 //===============================================================================
 // Called when user releases ANY key on the keyboard; captures scancodes well
-
+	
 	console.log('myKeyUp()--keyCode='+kev.keyCode+' released.');
 }
