@@ -78,7 +78,15 @@ var g_xMdragTot=0.0;	// total (accumulated) mouse-drag amounts (in CVV coords).
 var g_yMdragTot=0.0; 
 var g_digits=5;			// DIAGNOSTICS: # of digits to print in console.log (
 									//    console.log('xVal:', xVal.toFixed(g_digits)); // print 5 digits
-
+var g_matrixStack = []; // Array for storing matrices
+function pushMatrix(m) { // Store the specified matrix
+	var m2 = new Matrix4(m);
+	g_matrixStack.push(m2);
+}
+									 
+function popMatrix() { // Retrieve a matrix from the array
+	return g_matrixStack.pop();
+}
 
 function main() {
 //==============================================================================
@@ -323,35 +331,35 @@ function initVertexBuffer() {
 	-0.5/Math.sqrt(3), -0.2, 0.5, 1,			1.0, 1.0, 0.0, //1d
 	.5/Math.sqrt(3), -0.2, 0.5, 1,			1.0, 1.0, 0.0, //6d			#71
 //SPACESHIP TOP VERTICES
-	0, 0, -0.5, 1, 							0.3, 0.3, 0.3,
-	0, 0.5, -0.5, 1, 						0.3, 0.3, 0.3,
-	0.5, 0, -0.5, 1,						0.3, 0.3, 0.3,
-	0.5, 0.5, -0.5, 1, 						0.3, 0.3, 0.3,
+	0, 0, -0.5, 1, 							0.0, 0.5, 0.5,
+	0, 0.5, -0.5, 1, 						0.0, 0.5, 0.5,
+	0.5, 0, -0.5, 1,						0.0, 0.5, 0.5,
+	0.5, 0.5, -0.5, 1, 						0.0, 0.5, 0.5,
 
-	0, 0, 0.5, 1, 							0.3, 0.3, 0.3,
-	0, 0.5, 0.5, 1, 						0.3, 0.3, 0.3,
-	0.5, 0, 0.5, 1,							0.3, 0.3, 0.3,
-	0.5, 0.5, 0.5, 1, 						0.3, 0.3, 0.3,
+	0, 0, 0.5, 1, 							0.0, 0.5, 0.5,
+	0, 0.5, 0.5, 1, 						0.0, 0.5, 0.5,
+	0.5, 0, 0.5, 1,							0.0, 0.5, 0.5,
+	0.5, 0.5, 0.5, 1, 						0.0, 0.5, 0.5,
 
-	0, 0, 0.5, 1,							0.3, 0.3, 0.3,
-	0, 0.5, 0.5, 1, 						0.3, 0.3, 0.3,
-	0, 0, -0.5, 1, 							0.3, 0.3, 0.3,
-	0, 0.5, -0.5, 1, 						0.3, 0.3, 0.3,
+	0, 0, 0.5, 1,							0.0, 0.5, 0.5,
+	0, 0.5, 0.5, 1, 						0.0, 0.5, 0.5,
+	0, 0, -0.5, 1, 							0.0, 0.5, 0.5,
+	0, 0.5, -0.5, 1, 						0.0, 0.5, 0.5,
 
-	0, 0, 0.5, 1, 							0.3, 0.3, 0.3,
-	0, 0, -0.5, 1, 							0.3, 0.3, 0.3,
-	0.5, 0, 0.5, 1,							0.3, 0.3, 0.3,
-	0.5, 0, -0.5, 1,						0.3, 0.3, 0.3,
+	0, 0, 0.5, 1, 							0.0, 0.5, 0.5,
+	0, 0, -0.5, 1, 							0.0, 0.5, 0.5,
+	0.5, 0, 0.5, 1,							0.0, 0.5, 0.0,
+	0.5, 0, -0.5, 1,						0.0, 0.5, 0.5,
 
-	0.5, 0, 0.5, 1,							0.5, 0.5, 0.5,
-	0.5, 0.5, 0.5, 1, 						0.5, 0.5, 0.5,
-	0.5, 0, -0.5, 1,						0.5, 0.5, 0.5,
-	0.5, 0.5, -0.5, 1, 						0.5, 0.5, 0.5,
+	0.5, 0, 0.5, 1,							0.0, 0.5, 0.5,
+	0.5, 0.5, 0.5, 1, 						0.0, 0.5, 0.5,
+	0.5, 0, -0.5, 1,						0.0, 0.5, 0.5,
+	0.5, 0.5, -0.5, 1, 						0.0, 0.5, 0.5,
 
-	0, 0, 0.5, 1, 							0.5, 0.5, 0.5,
-	0, 0.5, -0.5, 1, 						0.5, 0.5, 0.5,
-	0.5, 0.5, 0.5, 1, 						0.5, 0.5, 0.5,
-	0.5, 0.5, -0.5, 1, 						0.5, 0.5, 0.5,
+	0, 0, 0.5, 1, 							0.0, 0.5, 0.5,
+	0, 0.5, -0.5, 1, 						0.0, 0.5, 0.5,
+	0.5, 0.5, 0.5, 1, 						0.0, 0.5, 0.5,
+	0.5, 0.5, -0.5, 1, 						0.0, 0.5, 0.5,
 
 	//ABDUCTION BEAM VERTICES
 	-0.5/Math.sqrt(3), 0, 0.5, 1,			0.0, 1.0, 0.0, //1 //96
@@ -369,7 +377,53 @@ function initVertexBuffer() {
 	-0.5/Math.sqrt(3), 0, 0.5, 1,			0.0, 1.0, 0.0, //1
 	-0.5/Math.sqrt(3)+0.2/Math.sqrt(2), 0, 0.5-0.2/Math.sqrt(2), 1,			0.0, 1.0, 0.0, //1a //109
 
+	//ANIMAL BODY VERTICES
+	0, 0, -0.25, 1, 							0.929, 0.588, 0.043,  //110
+	0, 0.5, -0.25, 1, 						0.929, 0.588, 0.043,
+	0.5, 0, -0.25, 1,						0.929, 0.588, 0.043,
+	0.5, 0.5, -0.25, 1, 						0.929, 0.588, 0.043,
 
+	0, 0, 0.25, 1, 							0.929, 0.588, 0.043,
+	0, 0.5, 0.25, 1, 						0.929, 0.588, 0.043,
+	0.5, 0, 0.25, 1,							0.929, 0.588, 0.043,
+	0.5, 0.5, 0.25, 1, 						0.929, 0.588, 0.043,
+
+	0, 0, 0.25, 1,							0.929, 0.588, 0.043,
+	0, 0.5, 0.25, 1, 						0.929, 0.588, 0.043,
+	0, 0, -0.25, 1, 							0.929, 0.588, 0.043,
+	0, 0.5, -0.25, 1, 						0.929, 0.588, 0.043,
+
+	0, 0, 0.25, 1, 							0.929, 0.588, 0.043,
+	0, 0, -0.25, 1, 							0.929, 0.588, 0.043,
+	0.5, 0, 0.25, 1,							0.929, 0.588, 0.043,
+	0.5, 0, -0.25, 1,						0.929, 0.588, 0.043,
+
+	0.5, 0, 0.25, 1,							0.929, 0.588, 0.043,
+	0.5, 0.5, 0.25, 1, 						0.929, 0.588, 0.043,
+	0.5, 0, -0.25, 1,						0.929, 0.588, 0.043,
+	0.5, 0.5, -0.25, 1, 						0.929, 0.588, 0.043,
+
+	0, 0, 0.25, 1, 							0.929, 0.588, 0.043,
+	0, 0.5, -0.25, 1, 						0.929, 0.588, 0.043,
+	0.5, 0.5, 0.25, 1, 						0.929, 0.588, 0.043,
+	0.5, 0.5, -0.25, 1, 						0.929, 0.588, 0.043,
+	
+	//ANIMAL HEAD
+	0, 0, 0, 1,								0.929, 0.588, 0.043, //134
+	0, 0.2, 0, 1, 							0.929, 0.588, 0.043,
+	0.4, 0, 0, 1, 							0.929, 0.588, 0.043,
+	
+	0, 0, -.14, 1,								0.929, 0.588, 0.043, //137
+	0, 0.2, -.14, 1, 							0.929, 0.588, 0.043,
+	0.4, 0, -.14, 1, 							0.929, 0.588, 0.043,
+
+	0.4, 0, 0, 1, 							0.929, 0.588, 0.043,
+	0, 0.2, 0, 1, 							0.929, 0.588, 0.043,
+	0, 0.2, -.14, 1, 							0.929, 0.588, 0.043,
+
+	0.4, 0, 0, 1, 							0.929, 0.588, 0.043,   //143
+	0, 0.2, -.14, 1, 							0.929, 0.588, 0.043,
+	0.4, 0, -.14, 1, 							0.929, 0.588, 0.043,
 
 
   ]);
@@ -460,6 +514,59 @@ function drawSpaceShipTop(){
 	g_modelMatrix = popMatrix();
 	
 }
+function drawAnimalBody(){
+	g_modelMatrix = popMatrix();
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.translate(-0.4, -.8, 0);
+	g_modelMatrix.rotate(20, 1, 1, 1);
+	g_modelMatrix.scale(1, 0.5, 0.1);
+	//g_modelMatrix.rotate(g_angle01, 0, 1, 0);
+	pushMatrix(g_modelMatrix);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 110, 24);
+	g_modelMatrix = popMatrix();
+}
+function drawAnimalNeck(){
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.translate(-.20, .4, 0);
+	pushMatrix(g_modelMatrix);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 134, 12);
+	g_modelMatrix = popMatrix();
+}
+function drawAnimalHead(){
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.translate(-.1, 0, 0);
+	g_modelMatrix.scale(0.33, 0.66, 0.66);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 110, 24);
+}
+function drawAnimalLeg(){
+	
+	pushMatrix(g_modelMatrix);
+	g_modelMatrix.translate(0, -.3, 0);
+	g_modelMatrix.scale(0.5,1,1);
+	g_modelMatrix.rotate(90, 0, 0, 1);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 134, 12);
+	g_modelMatrix = popMatrix();
+}
+function drawAnimalLegs(){
+	popMatrix();
+	g_modelMatrix = popMatrix();
+	g_modelMatrix.translate(0.1, 0, -.1);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	drawAnimalLeg();
+	g_modelMatrix.translate(0, 0, .3);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	drawAnimalLeg();
+	g_modelMatrix.translate(0.3, 0, 0);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	drawAnimalLeg();
+	g_modelMatrix.translate(0, 0, -.2);
+	gl.uniformMatrix4fv(g_modelMatLoc, false, g_modelMatrix.elements);
+	drawAnimalLeg();
+}
 
 function initializeCanvas(){
 	gl.clearColor(0.5294, 0.8078, 0.9216, 1);
@@ -483,7 +590,6 @@ function drawSampleTriangle(){
 	gl.drawArrays(gl.TRIANGLES,12,3 );
 }
 function drawAbudctionBeam(scale, y){
-	
 	pushMatrix(g_modelMatrix);
 	g_modelMatrix.translate(0, y, 0);
 	g_modelMatrix.scale(scale, scale, scale)
@@ -491,6 +597,14 @@ function drawAbudctionBeam(scale, y){
 	gl.drawArrays(gl.TRIANGLE_STRIP, 96, 12);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 106, 4);
 	g_modelMatrix = popMatrix();
+}
+function drawAbductionBeams(){
+	if ((g_angle01 > 0 )&& (g_angle01 < 30) || (g_angle01 >90 && g_angle01 < 120 ) || (g_angle01 >-180 && g_angle01 < -150 ) || (g_angle01 >-90 && g_angle01 < -60 )) {
+		drawAbudctionBeam(1, -.3);}
+		if ((g_angle01 > 30 && g_angle01 < 60) || (g_angle01 >120 && g_angle01 < 150 ) || (g_angle01 >-150 && g_angle01 < -120 ) || (g_angle01 >-60 && g_angle01 < -30 )){
+		drawAbudctionBeam(0.75, -.6);}
+		if ((g_angle01 > 60 && g_angle01 < 90) || (g_angle01 >150 && g_angle01 < 180 ) || (g_angle01 >-120 && g_angle01 < -90) || (g_angle01 >-30 && g_angle01 < 0 )){
+		drawAbudctionBeam(0.5, -0.9);}
 }
 function drawSpinningTetrahedron(){
 	g_modelMatrix.setTranslate(-0.8,-0.8, 0.0);  // 'set' means DISCARD old matrix,
@@ -545,15 +659,14 @@ function drawAll() {
   
 	initializeCanvas();
 	g_modelMatrix.setTranslate(0,0,0);
-  	//drawSampleTriangle();
+	pushMatrix(g_modelMatrix);  	//drawSampleTriangle();
  	drawSpaceShipBase();
 	drawSpaceShipTop();
-	if ((g_angle01 > 0 )&& (g_angle01 < 30) || (g_angle01 >90 && g_angle01 < 120 ) || (g_angle01 >-180 && g_angle01 < -150 ) || (g_angle01 >-90 && g_angle01 < -60 )) {
-	drawAbudctionBeam(1, -.3);}
-	if ((g_angle01 > 30 && g_angle01 < 60) || (g_angle01 >120 && g_angle01 < 150 ) || (g_angle01 >-150 && g_angle01 < -120 ) || (g_angle01 >-60 && g_angle01 < -30 )){
-	drawAbudctionBeam(0.75, -.6);}
-	if ((g_angle01 > 60 && g_angle01 < 90) || (g_angle01 >150 && g_angle01 < 180 ) || (g_angle01 >-120 && g_angle01 < -90) || (g_angle01 >-30 && g_angle01 < 0 )){
-	drawAbudctionBeam(0.5, -0.9);}
+	drawAbductionBeams();
+	drawAnimalBody();
+	drawAnimalNeck();
+	drawAnimalHead();
+	drawAnimalLegs();
 	//drawSpinningTetrahedron();
 	//drawInteractiveWedge();
 }
